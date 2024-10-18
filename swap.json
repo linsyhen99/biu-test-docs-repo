@@ -252,6 +252,47 @@
         }
       }
     },
+    "/swap/v6/transaction": {
+      "post": {
+        "tags": [
+          "Swap"
+        ],
+        "summary": "POST /swap",
+        "description": "Returns a transaction that you can use from the quote you get from `/quote`.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwapRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SwapResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/swap/v6/instructions": {
       "post": {
         "tags": [
