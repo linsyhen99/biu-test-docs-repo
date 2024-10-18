@@ -1,0 +1,1076 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Swap API",
+    "description": "Swap API",
+    "version": "0.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.jup.ag"
+    }
+  ],
+  "paths": {
+    "/swap/v6/quote": {
+      "get": {
+        "tags": [
+          "Swap"
+        ],
+        "summary": "GET /quote",
+        "description": "Sends a GET request to the Jupiter API to get the best priced quote.",
+        "parameters": [
+          {
+            "name": "inputMint",
+            "in": "query",
+            "description": "Input token mint address",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "outputMint",
+            "in": "query",
+            "description": "Output token mint address",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "description": "The amount to swap, have to factor in the token decimals.",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "slippageBps",
+            "in": "query",
+            "description": "The slippage in basis points, 1 basis point is 0.01%. If the output token amount exceeds the slippage then the swap transaction will fail.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "autoSlippage",
+            "in": "query",
+            "description": "Automatically calculate the slippage based on pairs.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "autoSlippageCollisionUsdValue",
+            "in": "query",
+            "description": "Automatic slippage collision value.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "computeAutoSlippage",
+            "in": "query",
+            "description": "Compute auto slippage value without using it.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "maxAutoSlippageBps",
+            "in": "query",
+            "description": "Max slippage in basis points for auto slippage calculation. Default is 400.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "swapMode",
+            "in": "query",
+            "description": "(ExactIn or ExactOut) Defaults to ExactIn. ExactOut is for supporting use cases where you need an exact token amount, like payments. In this case the slippage is on the input token.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ExactIn",
+                "ExactOut"
+              ]
+            }
+          },
+          {
+            "name": "dexes",
+            "in": "query",
+            "description": "Default is that all DEXes are included. You can pass in the DEXes that you want to include only and separate them by `,`. You can check out the full list [here](https://quote-api.jup.ag/v6/program-id-to-label).",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "excludeDexes",
+            "in": "query",
+            "description": "Default is that all DEXes are included. You can pass in the DEXes that you want to exclude and separate them by `,`. You can check out the full list [here](https://quote-api.jup.ag/v6/program-id-to-label).",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "restrictIntermediateTokens",
+            "in": "query",
+            "description": "Restrict intermediate tokens to a top token set that has stable liquidity. This will help to ease potential high slippage error rate when swapping with minimal impact on pricing.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "onlyDirectRoutes",
+            "in": "query",
+            "description": "Default is false. Direct Routes limits Jupiter routing to single hop routes only.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "asLegacyTransaction",
+            "in": "query",
+            "description": "Default is false. Instead of using versioned transaction, this will use the legacy transaction.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "platformFeeBps",
+            "in": "query",
+            "description": "If you want to charge the user a fee, you can specify the fee in BPS. Fee % is taken out of the output token.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "maxAccounts",
+            "in": "query",
+            "description": "Rough estimate of the max accounts to be used for the quote, so that you can compose with your own accounts",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "minimizeSlippage",
+            "in": "query",
+            "description": "Default is false. Miminize slippage attempts to find routes with lower slippage.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "preferLiquidDexes",
+            "in": "query",
+            "description": "Default is false. Enabling it would only consider markets with high liquidity to reduce slippage.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/swap/v6/transaction": {
+      "post": {
+        "tags": [
+          "Swap"
+        ],
+        "summary": "POST /swap",
+        "description": "Returns a transaction that you can use from the quote you get from `/quote`.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwapRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SwapResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/swap/v6/instructions": {
+      "post": {
+        "tags": [
+          "Swap"
+        ],
+        "summary": "POST /swap-instructions",
+        "description": "Returns instructions that you can use from the quote you get from `/quote`.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwapRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SwapInstructionsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/swap/v6/program-id-to-label": {
+      "get": {
+        "tags": [
+          "Swap"
+        ],
+        "summary": "GET /program-id-to-label",
+        "description": "Returns a hash, which key is the program id and value is the label. This is used to help map error from transaction by identifying the fault program id. With that, we can use the `excludeDexes` or `dexes` parameter.",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "required": [
+          "errorCode",
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "string",
+            "example": [
+              "NO_ROUTES_FOUND",
+              "COULD_NOT_FIND_ANY_ROUTE",
+              "ROUTE_PLAN_DOES_NOT_CONSUME_ALL_THE_AMOUNT",
+              "TOKEN_NOT_TRADABLE",
+              "NOT_SUPPORTED",
+              "CIRCULAR_ARBITRAGE_IS_DISABLED",
+              "CANNOT_COMPUTE_OTHER_AMOUNT_THRESHOLD",
+              "MAX_ACCOUNT_GREATER_THAN_MAX"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Price": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Address of the token"
+          },
+          "mintSymbol": {
+            "type": "string",
+            "description": "Symbol of the token"
+          },
+          "vsToken": {
+            "type": "string",
+            "description": "Address of the vs token"
+          },
+          "vsTokenSymbol": {
+            "type": "string",
+            "description": "Symbol of the vs token"
+          },
+          "price": {
+            "type": "number",
+            "description": "Default to 1 unit of the token worth in USDC if vsToken is not specified."
+          }
+        },
+        "example": {
+          "id": "So11111111111111111111111111111111111111112",
+          "mintSymbol": "SOL",
+          "vsToken": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "vsTokenSymbol": "USDC",
+          "price": 36.094229038
+        }
+      },
+      "PriceHash": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/Price"
+        },
+        "example": {
+          "SOL": {
+            "id": "So11111111111111111111111111111111111111112",
+            "mintSymbol": "SOL",
+            "vsToken": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "vsTokenSymbol": "USDC",
+            "price": 36.094229038
+          },
+          "USDT": {
+            "id": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+            "mintSymbol": "USDT",
+            "vsToken": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "vsTokenSymbol": "USDC",
+            "price": 1.000052
+          }
+        }
+      },
+      "Instruction": {
+        "required": [
+          "accounts",
+          "data",
+          "programId"
+        ],
+        "type": "object",
+        "properties": {
+          "programId": {
+            "type": "string"
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountMeta"
+            }
+          },
+          "data": {
+            "type": "string"
+          }
+        }
+      },
+      "AccountMeta": {
+        "required": [
+          "isSigner",
+          "isWritable",
+          "pubkey"
+        ],
+        "type": "object",
+        "properties": {
+          "pubkey": {
+            "type": "string"
+          },
+          "isSigner": {
+            "type": "boolean"
+          },
+          "isWritable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PriorityFeeWithMaxLamports": {
+        "type": "object",
+        "properties": {
+          "global": {
+            "type": "boolean"
+          },
+          "maxLamports": {
+            "type": "integer"
+          },
+          "priorityLevel": {
+            "type": "string",
+            "enum": [
+              "medium",
+              "high",
+              "veryHigh"
+            ]
+          }
+        }
+      },
+      "QuoteResponse": {
+        "required": [
+          "inAmount",
+          "inputMint",
+          "otherAmountThreshold",
+          "outAmount",
+          "outputMint",
+          "priceImpactPct",
+          "routePlan",
+          "slippageBps",
+          "swapMode"
+        ],
+        "type": "object",
+        "properties": {
+          "inputMint": {
+            "type": "string"
+          },
+          "inAmount": {
+            "type": "string"
+          },
+          "outputMint": {
+            "type": "string"
+          },
+          "outAmount": {
+            "type": "string"
+          },
+          "otherAmountThreshold": {
+            "type": "string"
+          },
+          "swapMode": {
+            "$ref": "#/components/schemas/SwapMode"
+          },
+          "slippageBps": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "computedAutoSlippage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "platformFee": {
+            "$ref": "#/components/schemas/PlatformFee"
+          },
+          "priceImpactPct": {
+            "type": "string"
+          },
+          "routePlan": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoutePlanStep"
+            }
+          },
+          "contextSlot": {
+            "type": "number"
+          },
+          "timeTaken": {
+            "type": "number"
+          }
+        }
+      },
+      "SwapMode": {
+        "type": "string",
+        "enum": [
+          "ExactIn",
+          "ExactOut"
+        ]
+      },
+      "PlatformFee": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string"
+          },
+          "feeBps": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RoutePlanStep": {
+        "required": [
+          "percent",
+          "swapInfo"
+        ],
+        "type": "object",
+        "properties": {
+          "swapInfo": {
+            "$ref": "#/components/schemas/SwapInfo"
+          },
+          "percent": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SwapInfo": {
+        "required": [
+          "ammKey",
+          "feeAmount",
+          "feeMint",
+          "inAmount",
+          "inputMint",
+          "outAmount",
+          "outputMint"
+        ],
+        "type": "object",
+        "properties": {
+          "ammKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "inputMint": {
+            "type": "string"
+          },
+          "outputMint": {
+            "type": "string"
+          },
+          "inAmount": {
+            "type": "string"
+          },
+          "outAmount": {
+            "type": "string"
+          },
+          "feeAmount": {
+            "type": "string"
+          },
+          "feeMint": {
+            "type": "string"
+          }
+        }
+      },
+      "SwapRequest": {
+        "required": [
+          "quoteResponse",
+          "userPublicKey"
+        ],
+        "type": "object",
+        "properties": {
+          "userPublicKey": {
+            "type": "string",
+            "description": "The user public key."
+          },
+          "wrapAndUnwrapSol": {
+            "type": "boolean",
+            "description": "Default is true. If true, will automatically wrap/unwrap SOL. If false, it will use wSOL token account.  Will be ignored if `destinationTokenAccount` is set because the `destinationTokenAccount` may belong to a different user that we have no authority to close.",
+            "default": true
+          },
+          "useSharedAccounts": {
+            "type": "boolean",
+            "description": "Default is true. This enables the usage of shared program accountns. That means no intermediate token accounts or open orders accounts need to be created for the users. But it also means that the likelihood of hot accounts is higher.",
+            "default": true
+          },
+          "feeAccount": {
+            "type": "string",
+            "description": "Fee token account, same as the output token for ExactIn and as the input token for ExactOut, it is derived using the seeds = [\"referral_ata\", referral_account, mint] and the `REFER4ZgmyYx9c6He5XfaTMiGfdLwRnkV4RPp9t9iF3` referral contract (only pass in if you set a feeBps and make sure that the feeAccount has been created)."
+          },
+          "trackingAccount": {
+            "type": "string",
+            "description": "Tracking account, this can be any public key that you can use to track the transactions, especially useful for integrator. Then you can use the `https://stats.jup.ag/tracking-account/:public-key/YYYY-MM-DD/HH` endpoint to get all the swap transactions from this public key."
+          },
+          "computeUnitPriceMicroLamports": {
+            "description": "The compute unit price to prioritize the transaction, the additional fee will be `computeUnitLimit (1400000) * computeUnitPriceMicroLamports`. If `auto` is used, Jupiter will automatically set a priority fee and it will be capped at 5,000,000 lamports / 0.005 SOL.",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "auto"
+                ]
+              }
+            ]
+          },
+          "prioritizationFeeLamports": {
+            "description": "\\* PriorityFeeWithMaxLamports is impossible to be typed. Prioritization fee lamports paid for the transaction in addition to the signatures fee. Mutually exclusive with compute_unit_price_micro_lamports. If `auto` is used, Jupiter will automatically set a priority fee and it will be capped at 5,000,000 lamports / 0.005 SOL.",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "auto"
+                ]
+              }
+            ]
+          },
+          "asLegacyTransaction": {
+            "type": "boolean",
+            "description": "Default is false. Request a legacy transaction rather than the default versioned transaction, needs to be paired with a quote using asLegacyTransaction otherwise the transaction might be too large.",
+            "default": false
+          },
+          "useTokenLedger": {
+            "type": "boolean",
+            "description": "Default is false. This is useful when the instruction before the swap has a transfer that increases the input token amount. Then, the swap will just use the difference between the token ledger token amount and post token amount.",
+            "default": false
+          },
+          "destinationTokenAccount": {
+            "type": "string",
+            "description": "Public key of the token account that will be used to receive the token out of the swap. If not provided, the user's ATA will be used. If provided, we assume that the token account is already initialized."
+          },
+          "dynamicComputeUnitLimit": {
+            "type": "boolean",
+            "description": "When enabled, it will do a swap simulation to get the compute unit used and set it in ComputeBudget's compute unit limit. This will increase latency slightly since there will be one extra RPC call to simulate this. Default is `false`."
+          },
+          "skipUserAccountsRpcCalls": {
+            "type": "boolean",
+            "description": "When enabled, it will not do any rpc calls check on user's accounts. Enable it only when you already setup all the accounts needed for the trasaction, like wrapping or unwrapping sol, destination account is already created."
+          },
+          "programAuthorityId": {
+            "type": "integer",
+            "description": "The program authority id [0;7], load balanced across the available set by default"
+          },
+          "allowOptimizedWrappedSolTokenAccount": {
+            "type": "boolean",
+            "description": "Default is false. Enabling it would reduce use an optimized way to open WSOL that reduce compute unit.",
+            "default": false
+          },
+          "quoteResponse": {
+            "$ref": "#/components/schemas/QuoteResponse"
+          },
+          "dynamicSlippage": {
+            "$ref": "#/components/schemas/SwapRequest_dynamicSlippage"
+          }
+        }
+      },
+      "SwapResponse": {
+        "required": [
+          "lastValidBlockHeight",
+          "swapTransaction"
+        ],
+        "type": "object",
+        "properties": {
+          "swapTransaction": {
+            "type": "string"
+          },
+          "lastValidBlockHeight": {
+            "type": "number"
+          },
+          "prioritizationFeeLamports": {
+            "type": "number"
+          },
+          "dynamicSlippageReport": {
+            "$ref": "#/components/schemas/SwapResponse_dynamicSlippageReport"
+          }
+        }
+      },
+      "SwapInstructionsResponse": {
+        "required": [
+          "addressLookupTableAddresses",
+          "computeBudgetInstructions",
+          "setupInstructions",
+          "swapInstruction"
+        ],
+        "type": "object",
+        "properties": {
+          "tokenLedgerInstruction": {
+            "$ref": "#/components/schemas/Instruction"
+          },
+          "computeBudgetInstructions": {
+            "type": "array",
+            "description": "The necessary instructions to setup the compute budget.",
+            "items": {
+              "$ref": "#/components/schemas/Instruction"
+            }
+          },
+          "setupInstructions": {
+            "type": "array",
+            "description": "Setup missing ATA for the users.",
+            "items": {
+              "$ref": "#/components/schemas/Instruction"
+            }
+          },
+          "swapInstruction": {
+            "$ref": "#/components/schemas/Instruction"
+          },
+          "cleanupInstruction": {
+            "$ref": "#/components/schemas/Instruction"
+          },
+          "addressLookupTableAddresses": {
+            "type": "array",
+            "description": "The lookup table addresses that you can use if you are using versioned transaction.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "IndexedRouteMapResponse": {
+        "required": [
+          "indexedRouteMap",
+          "mintKeys"
+        ],
+        "type": "object",
+        "properties": {
+          "mintKeys": {
+            "type": "array",
+            "description": "All the mints that are indexed to match in indexedRouteMap",
+            "items": {
+              "type": "string"
+            }
+          },
+          "indexedRouteMap": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "description": "All the possible route and their corresponding output mints",
+            "example": {
+              "1": [
+                2,
+                3,
+                4
+              ],
+              "2": [
+                1,
+                3,
+                4
+              ]
+            }
+          }
+        }
+      },
+      "SwapRequest_dynamicSlippage": {
+        "type": "object",
+        "properties": {
+          "minBps": {
+            "type": "integer"
+          },
+          "maxBps": {
+            "type": "integer"
+          }
+        }
+      },
+      "SwapResponse_dynamicSlippageReport": {
+        "type": "object",
+        "properties": {
+          "amplificationRatio": {
+            "type": "string"
+          },
+          "otherAmount": {
+            "type": "integer"
+          },
+          "simulatedIncurredSlippageBps": {
+            "type": "integer"
+          },
+          "slippageBps": {
+            "type": "integer"
+          }
+        }
+      },
+      "Mint": {
+        "type": "object",
+        "required": [
+          "address",
+          "name",
+          "symbol",
+          "decimals",
+          "tags",
+          "created_at",
+          "extensions"
+        ],
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "daily_volume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "decimals": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "extensions": {},
+          "freeze_authority": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoURI": {
+            "type": "string",
+            "nullable": true
+          },
+          "mint_authority": {
+            "type": "string",
+            "nullable": true
+          },
+          "minted_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "permanent_delegate": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "nullable": true
+            }
+          }
+        }
+      },
+      "MintIncludingDuplicates": {
+        "type": "object",
+        "required": [
+          "address",
+          "name",
+          "symbol",
+          "decimals",
+          "tags",
+          "created_at",
+          "extensions"
+        ],
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "daily_volume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "decimals": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "extensions": {},
+          "freeze_authority": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoURI": {
+            "type": "string",
+            "nullable": true
+          },
+          "mint_authority": {
+            "type": "string",
+            "nullable": true
+          },
+          "minted_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "permanent_delegate": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "nullable": true
+            }
+          }
+        }
+      },
+      "MintWithCreationTimeAndMarkets": {
+        "type": "object",
+        "required": [
+          "mint",
+          "created_at",
+          "metadata_updated_at",
+          "name",
+          "symbol",
+          "decimals",
+          "known_markets"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "decimals": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "freeze_authority": {
+            "type": "string",
+            "nullable": true
+          },
+          "known_markets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "logo_uri": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata_updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "mint": {
+            "type": "string"
+          },
+          "mint_authority": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          }
+        }
+      },
+      "Status": {
+        "type": "object",
+        "required": [
+          "db_last_updated"
+        ],
+        "properties": {
+          "db_last_updated": {
+            "$ref": "#/components/schemas/LastUpdated"
+          },
+          "last_sync_to_typesense": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "LastUpdated": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "tags": []
+}
